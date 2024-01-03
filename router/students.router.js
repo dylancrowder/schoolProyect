@@ -1,21 +1,32 @@
 import { Router } from "express";
 import Student from "../manager/Students.manager.js";
-
 const router = Router();
-
-router.get("/students", async (req, res) => {
-  try {
-    const student = await Student.get();
-    res.status(200).json(student);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: "Error al obtener carritos" });
-  }
-});
 
 router.get("/student/:sid", async (req, res) => {
   const { sid } = req.params;
   const student = await Student.getById(sid);
+  res.status(200).json(student);
+});
+
+router.get("/perfil", async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const student = await Student.get();
+      console.log("Datos del estudiante:", student); // Verifica los datos antes de enviarlos
+      res.status(200).json(student);
+      console.log("Sí está autorizado", req.user);
+    } catch (error) {
+      console.error("Error al obtener datos del estudiante:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  } else {
+    console.log("No está autorizado");
+    res.redirect("/");
+  }
+});
+
+router.get("/studentGet", async (req, res) => {
+  const student = await Student.get();
   res.status(200).json(student);
 });
 
