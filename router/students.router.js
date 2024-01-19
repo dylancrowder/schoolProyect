@@ -1,11 +1,22 @@
 import { Router } from "express";
-import Student from "../manager/Students.manager.js";
+import Student from "../controller/Students.manager.js";
 const router = Router();
 
 router.get("/student/:sid", async (req, res) => {
   const { sid } = req.params;
   const student = await Student.getById(sid);
   res.status(200).json(student);
+});
+
+router.get("/logout", (req, res) => {
+  req.session.destroy((error) => {
+    if (error) {
+      console.error("Session destroy error:", error);
+      res.status(500).json({ message: "ocurrió un error" });
+    } else {
+      res.status(400).json({ desconectado: "susses" });
+    }
+  });
 });
 
 router.get("/perfil", async (req, res) => {
@@ -30,7 +41,7 @@ router.get("/studentGet", async (req, res) => {
   res.status(200).json(student);
 });
 
-router.post("/student", async (req, res) => {
+router.post("/addStudent", async (req, res) => {
   try {
     const { body } = req;
     let student = await Student.create(body);
@@ -91,6 +102,33 @@ router.get("/studentFindByDni", async (req, res) => {
   const student = await Student.searchStudent(dniNumber);
 
   res.status(200).json(student);
+});
+
+router.get("/mostrarEstudiantes/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const student = await Student.showCalifications(id);
+    res.status(200).json(student);
+  } catch (error) {
+    console.error(error);
+  }
+});
+router.get("/studentsByYear/:year", async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const { year } = req.query;
+      const student = await Student.getByYear(year);
+      console.log("Datos del estudiante:", student); // Verifica los datos antes de enviarlos
+      res.status(200).json(student);
+      console.log("Sí está autorizado", req.user);
+    } catch (error) {
+      console.error("Error al obtener datos del estudiante:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  } else {
+    console.log("No está autorizado");
+    res.redirect("/");
+  }
 });
 
 export default router;

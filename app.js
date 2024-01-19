@@ -10,6 +10,7 @@ import MongoStore from "connect-mongo";
 import bodyParser from "body-parser";
 import students from "./router/students.router.js";
 import userAuth from "./router/userAuth.router.js";
+import califications from "./router/califications.roter.js";
 
 const app = express();
 const PORT = 8080;
@@ -27,7 +28,6 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"]
   })
 );
-
 
 const SESSION_SECRET = "|7@3BBY5jH:@zFQIg_v47HkKP5S#p&Uc";
 
@@ -49,7 +49,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/auth", userAuth);
-app.use("/", students);
+app.use("/", students, califications);
 
 const server = http.createServer(app);
 

@@ -16,7 +16,7 @@ router.post(
 
 router.post(
   "/sessions/login",
-  passport.authenticate("login", { failureRedirect: "/sessions/register" }),
+  passport.authenticate("login", { failureRedirect: "/" }),
   async (req, res) => {
     res.json({ message: "Login exitoso." });
   }
